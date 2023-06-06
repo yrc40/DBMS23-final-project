@@ -14,19 +14,22 @@
 <div class=three> 
         <br>
         <br>
-        <form action="Completed.php">
-        <input type="submit" value="加入已修習課程" />
+        <form action="Completed.php" id="completed">
         </form>
+        <button type="submit" form="completed">加入已修習課程</button>
         <br>
         <br>
-        <form action="add.php">
-        <input type="submit" value="新增未知課程" />
+        <br>
+        <form action="add.php" id="add">
         </form>
+        <button type="submit" form="add">新增未知課程</button>
         <br>
         <br>
-        <form action="output.php">
-        <input type="submit" value="開始比對" />
+        <br>
+        <form action="output.php" id="output">
         </form>
+        <button type="submit" form="output">開始比對</button>
+        <br>
         <br>
         <br>
 </div>
