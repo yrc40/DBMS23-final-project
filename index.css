@@ -47,6 +47,18 @@ input{
     border-bottom-color: rgba(48, 29, 51, 0.769);
 }
 
-form:hover{
+button{
+    float: auto;
+    color:aliceblue;
+    font-size: 15px;
+    background-color:rgba(49, 35, 54, 0.557);
+    border-radius: 5px;
+    padding:8px 12px;
+    margin-right: 10px;
+    border:none;
+}
+
+
+button:hover{
     opacity: 0.8; 
 }
