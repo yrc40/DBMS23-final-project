@@ -12,7 +12,7 @@
         <style type="text/css">
 
                 #sitebody {
-                        width: 1500px;
+                        width: 1200px;
                         margin: 0 auto;
                         font-size: 18px;
                         
@@ -20,21 +20,21 @@
 
                 #sidebar_left {
                         background-color: rgba(221, 185, 220, 0.84);
-                        width: 500px;
+                        width: 400px;
                         height: 1200px;
                         text-align: center;
                         float: left;
                 }
                 #sidebar_right {
                         background-color: rgba(221, 185, 220, 0.84);
-                        width: 500px;
+                        width: 400px;
                         height: 1200px;
                         text-align: center;
                         float: right;
                 }
                 #content {
-                        margin-left: 500px;
-                        margin-right: 500px;
+                        margin-left: 400px;
+                        margin-right: 400px;
                         height: 1200px;
                         background-color:rgba(236, 207, 234, 0.84);
                         text-align: center;
