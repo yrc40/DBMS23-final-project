@@ -12,12 +12,12 @@ body{
   margin: 500px;
   margin-top: 50px;
   width: auto;
-  height: 400px;
-  background-image: linear-gradient(to bottom, rgba(207, 191, 207, 0.71), 
+  height: 500px;
+  background-image: linear-gradient(to bottom, rgba(207, 191, 207, 0.71),
   rgba(225, 205, 224, 0.84)),url("https://img.51miz.com/Element/00/81/16/73/6be3a32f_E811673_559bed6c.jpg") ;
   border: 5px solid rgba(48, 10, 43, 0.341);
   text-align: center;
-  background-size:540px 500px;
+  background-size:540px 600px;
   background-repeat : no-repeat;
 
 }
