@@ -22,7 +22,7 @@
         <br>
         <form action="add.php" id="add">
         </form>
-        <button type="submit" form="add">新增未知課程</button>
+        <button type="submit" form="add">新增抵免課程</button>
         <br>
         <br>
         <br>
