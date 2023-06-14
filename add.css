@@ -43,6 +43,17 @@ input[type="text"] {
     border-bottom-right-radius: 0;
 }
 
+select{
+    position: relative;
+    font-size: 16px;
+    height: auto;
+    padding: 10px;
+    caret-color: #9e7dae; /* 指定色 */
+    outline:transparent; /* 外框效果 */
+    border-color:transparent;
+    border-bottom-color: rgba(48, 29, 51, 0.769);
+}
+
 input[type="password"] {
     margin-bottom: 30px;
     border-top-left-radius: 80;
@@ -80,5 +91,6 @@ button{
 button:hover{
     opacity: 0.8; 
 }
+
 
 

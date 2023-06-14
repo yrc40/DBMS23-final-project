@@ -1,6 +1,6 @@
 <?php
 session_start(); 
-include "add_db_connect.php"
+include "db_connect.php"
 ?>
 
 <!DOCTYPE html>
@@ -15,20 +15,41 @@ include "add_db_connect.php"
 </head>
 
 <body>
-       <h2>Add Course</h2>
+       <h2>Add Course(加入抵免課程)</h2>
 <div class=three> 
         <label>Course name</label>
         <br>
         <form action=add.php method="get" id="add">
         <input type="text" name="cos_cname" placeholder="Course name">
         <br>
-        <label>Department name</label>
+        <label>Course credit</label>
         <br>
-        <input type="text" name="dep_cname" placeholder="Department name">
+        <select name="cos_credit" required>
+            <option>Course credit</option>
+            <option>0</option>
+            <option>1</option>
+            <option>2</option>
+            <option>3</option>
+            <option>4</option>
+            <option>5</option>
+            <option>6</option>
+        </select>
+        <br>
+        <!--<label>Course credit</label>
+        <br>
+        <input type="text" name="cos_credit" placeholder="Course credit">-->
         <br>
         <label>Course type</label>
         <br>
-        <input type="text" name="cos_type" placeholder="Course type">
+        <select name="cos_type" required>
+            <option>Course type</option>
+            <option>必修</option>
+            <option>選修</option>
+            <option>外語</option>
+            <option>通識</option>
+            <option>體育</option>
+        </select>
+        <br>
         <br>
         </form>
         <button type="submit" form="add">Submit</button>
@@ -41,35 +62,90 @@ include "add_db_connect.php"
 </div>
 
 <?php
-$cos_cname=$_GET["cos_cname"];
-$dep_cname=$_GET["dep_cname"];
-$cos_type=$_GET["cos_type"];
+//define the variables
+$cos_cname = $_GET["cos_cname"];
+$cos_credit = $_GET["cos_credit"];
+$cos_credit = (int)$cos_credit;
+$cos_type = $_GET["cos_type"];
+$liberal1101 = preg_match("/\領域課程/i", $cos_cname); //boolean
+$liberal1102 = preg_match("/\基本素養/i", $cos_cname); //boolean
+$bug = false;//boolean
 
- //sql語法存在變數中
-$sql = "INSERT INTO  `my_course` (`cos_cname`,`dep_cname`, `cos_type`) VALUE ($cos_cname,$dep_cname,$cos_type) ";
+//insertion information
+function cos_alert($message1, $message2, $message3) {
+    echo "<script>alert('已輸入抵免課程:$message1 學分:$message2 選別:$message3');</script>";
+}
+function liberal_alert($message1, $message2) {
+    echo "<script>alert('已輸入通識抵免 學分:$message1 向度:$message2');</script>";
+}
 
-// 用mysqli_query方法執行(sql語法)將結果存在變數中
-$result = mysqli_query($conn,$sql);
+//general debug
+function debug($conn, $sql){
+    if (mysqli_query($conn, $sql)) {
+        echo "query successfully" . "<br>";
+    } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+    }
+}
 
-function add_alert($message1, $message2, $message3) {
-    echo "<script>alert('已輸入課程:$message1 開課單位:$message2 選別:$message3');</script>";
+//calculate rowid of new data
+$sql = "SELECT COUNT(*) FROM `my_course`";
+$result = $conn->query($sql);
+$rowid = mysqli_fetch_array($result)[0]+1;
+
+//input debug
+switch($cos_type) {
+case "通識":
+    if(!$liberal1101 && !$liberal1102){
+        echo "<script>alert('輸入的通識抵免向度可能不存在!請再輸入一次');</script>";
+        $bug = true;
+    } 
+    break;
+case "體育":
+    if($cos_credit!=0){
+        echo "<script>alert('體育課程只能是0學分!請再輸入一次');</script>";
+        $bug = true;
+    } 
+    break;
+case "外語":
+    if($cos_credit==0){
+        echo "<script>alert('外語課程不能是0學分!請再輸入一次');</script>";
+        $bug = true;
+    } 
+    break;
+case "必修":
+    $sql = "SELECT COUNT(*) FROM `ece_course` WHERE (`main_class` = '基礎必修課程' OR `main_class` = '專業必修實驗課程') /*AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '')*/ AND `cos_cname`='$cos_cname'";
+    $result = $conn->query($sql);
+    print_r(mysqli_fetch_array($result));
+    debug($conn, $sql);
+    $result = $conn->query($sql);
+    if(mysqli_fetch_array($result)[0]==0){
+        echo "<script>alert('輸入之必修課程可能不是電機系必修!請再輸入一次');</script>";
+        $bug = true;
+    }
+    break;
 }
-function nonadd_alert($message1, $message2, $message3) {
-    echo "<script>alert('課程:$message1 開課單位:$message2 選別:$message3 已存在或不合法');</script>";
+
+if(!$bug){
+    if($cos_type == "通識") {
+        $sql = "INSERT INTO `my_course` (`rowid`, `cos_cname`,`cos_credit`, `cos_type`, `brief`) VALUES ('$rowid','$cos_cname','$cos_credit','$cos_type', '$cos_cname') ";
+        if (mysqli_query($conn, $sql)) {
+            echo "insert successfully";
+            liberal_alert($cos_credit, $cos_cname);
+            } else {
+                echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+              }
+    } else {
+        $sql = "INSERT INTO `my_course` (`rowid`, `cos_cname`,`cos_credit`, `cos_type`) VALUES ('$rowid','$cos_cname','$cos_credit','$cos_type') ";
+        if (mysqli_query($conn, $sql)) {
+             echo "insert successfully";
+             cos_alert($cos_cname,$cos_credit, $cos_type);
+        } else {
+            echo "Error: " . $sql . "<br>" . mysqli_error($conn);
+        }
+    }
 }
-// 如果有異動到資料庫數量(更新資料庫)
-if (mysqli_affected_rows($conn)>0) {
-// 如果有一筆以上代表有更新
-echo "成功新增未知課程";
-add_alert($cos_cname,$dep_cname,$cos_type);
-}
-elseif(mysqli_affected_rows($conn)==0) {
-    echo "無新增課程";
-    add_alert($cos_cname,$dep_cname,$cos_type);
-}
-else {
-    echo "{$sql} 語法執行失敗，錯誤訊息: " . mysqli_error($conn);
-}
+
  mysqli_close($conn); 
 ?>
 
