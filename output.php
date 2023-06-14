@@ -10,7 +10,19 @@ include "db_connect.php"
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 </head>
 
-
+<?php
+        function SaveChinese($string)
+        {
+                // $pattern = '/[\x{4E00}-\x{9FFF}]+/u'; // 使用 Unicode 编码范围匹配繁体中文字符
+                // preg_match_all($pattern, $string, $matches);
+                // $filteredString = implode('', $matches[0]);
+                // return $filteredString;
+                $pattern = '/[\p{Han}\p{Latin}]+/u'; // 匹配繁体中文和英文字母
+                preg_match_all($pattern, $string, $matches);
+                $filteredString = implode('', $matches[0]);
+                return $filteredString;
+        }
+?>
 
 
 <body>
