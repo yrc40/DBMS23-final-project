@@ -67,7 +67,7 @@ include "db_connect.php"
                 <div id="sidebar_left"><br>
                          <h2>尚未修習必修</h2>
                          <?php
-                                $que = "SELECT * FROM ece_course WHERE main_class = '基礎必修課程' AND cos_name NOT IN (SELECT 課程名稱 FROM gradetable)";
+                                $que = "SELECT * FROM ece_course WHERE main_class = '基礎必修課程' AND REGEXP_REPLACE(cos_name, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(課程名稱, '[^[:alnum:]]', '') FROM gradetable);";
                                 $course = mysqli_query($conn,$que);
                                 // while($meta = mysqli_fetch_field($course)){
                                 //         echo"$meta->name ";
@@ -140,13 +140,13 @@ include "db_connect.php"
                          <h2>建議選課</h2>   
                          <?php
                                 echo"<h3>推薦選修:</h3>";
-                                $que = "SELECT * FROM ece_course WHERE (main_class = '專業選修課程' OR main_class = '專業必修實驗課程') AND cos_name NOT IN (SELECT 課程名稱 FROM gradetable) GROUP BY cos_name ORDER BY RAND() LIMIT 10";
+                                $que = "SELECT * FROM ece_course WHERE (main_class = '專業選修課程' OR main_class = '專業必修實驗課程') AND REGEXP_REPLACE(cos_name, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(課程名稱, '[^[:alnum:]]', '') FROM gradetable) GROUP BY cos_name ORDER BY RAND() LIMIT 10";
                                 $course = mysqli_query($conn,$que);
                                 while($row = mysqli_fetch_row($course)){
                                         echo"$row[0]<br>";
                                 }
                                 echo"<h3>推薦核心課程:</h3>";
-                                $que = "SELECT * FROM 1112course WHERE (cos_type = '核心') AND cos_cname NOT IN (SELECT 課程名稱 FROM gradetable) GROUP BY cos_cname ORDER BY RAND() LIMIT 10";
+                                $que = "SELECT * FROM 1112course WHERE (cos_type = '核心') AND REGEXP_REPLACE(cos_cname, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(課程名稱, '[^[:alnum:]]', '') FROM gradetable) GROUP BY cos_cname ORDER BY RAND() LIMIT 10";
                                 $course = mysqli_query($conn,$que);
                                 while($row = mysqli_fetch_row($course)){
                                         echo"$row[1]<br>";
