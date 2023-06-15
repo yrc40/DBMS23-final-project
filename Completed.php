@@ -72,26 +72,26 @@ include "db_connect.php"
 			}
 
 			// 創建表格
-			$tableSql = "CREATE TABLE IF NOT EXISTS gradetable (
-				id INT AUTO_INCREMENT PRIMARY KEY,
-				學期 VARCHAR(10),
-				課程代碼 VARCHAR(10),
-				開課單位 VARCHAR(50),
-				課程名稱 VARCHAR(255),
-				選別 VARCHAR(10),
-				學分 DECIMAL(4, 2),
-				等級成績 VARCHAR(5),
-				成績狀態 VARCHAR(50),
-				任課老師 VARCHAR(50),
-				向度 VARCHAR(50)
+			$tableSql = "CREATE TABLE IF NOT EXISTS `my_course` (
+				`rowid` INT AUTO_INCREMENT PRIMARY KEY,
+				`semester` VARCHAR(4),
+				`cos_id` VARCHAR(6),
+				`dep_cname` VARCHAR(50),
+				`cos_cname` VARCHAR(255),
+				`cos_type` VARCHAR(20),
+				`cos_credit` DECIMAL(4, 2),
+				`grade` VARCHAR(8),
+				`grade_status` VARCHAR(10),
+				`teacher` VARCHAR(512),
+				`brief` VARCHAR(65)
 			)";
 
-			if ($conn->query($tableSql) === TRUE) {
+			if ($conn->query($tableSql) == TRUE) {
 				echo "Table created successfully";
 			} else {
 				echo "Error creating table: " . $conn->error;
 			}
-			$truncateSql = "TRUNCATE TABLE gradetable";
+			$truncateSql = "TRUNCATE TABLE `my_course`";
 			$conn->query($truncateSql);
 
 			// 將資料插入表格
@@ -108,7 +108,7 @@ include "db_connect.php"
 					$instructor = $row[9];
 					$dimension = $row[10];
 
-					$insertSql = "INSERT INTO gradetable (學期, 課程代碼, 開課單位, 課程名稱, 選別, 學分, 等級成績, 成績狀態, 任課老師, 向度) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					$insertSql = "INSERT INTO `my_course` (`semester`, `cos_id`, `dep_cname`, `cos_cname`, `cos_type`, `cos_credit`, `grade`, `grade_status`, `teacher`, `brief`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 					$stmt = $conn->prepare($insertSql);
 					$stmt->bind_param("ssssssssss", $semester, $courseId, $department, $courseName, $courseType, $credits, $grade, $gradeStatus, $instructor, $dimension);
