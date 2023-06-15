@@ -42,9 +42,6 @@ include "db_connect.php"
 
 			$lines = explode("\n", $course);
 
-			echo gettype($lines) . "\n";
-			echo count($lines) . "\n";
-
 			$table_key = [];
 			$table_index = 0;
 			$table_value = [];
@@ -56,9 +53,6 @@ include "db_connect.php"
 					break;
 				}
 			}
-
-			print_r($table_key);
-			echo "\n";
 
 			for ($i = $table_index + 2; $i < count($lines) - 5; $i++) {
 				$table_value[] = explode("\t", $lines[$i]);
@@ -102,26 +96,30 @@ include "db_connect.php"
 
 			// 將資料插入表格
 			foreach ($table_value as $row) {
-				$semester = $row[1];
-				$courseId = $row[2];
-				$department = $row[3];
-				$courseName = $row[4];
-				$courseType = $row[5];
-				$credits = $row[6];
-				$grade = $row[7];
-				$gradeStatus = $row[8];
-				$instructor = $row[9];
-				$dimension = $row[10];
+				if (count($row) === 11) {
+					$semester = $row[1];
+					$courseId = $row[2];
+					$department = $row[3];
+					$courseName = $row[4];
+					$courseType = $row[5];
+					$credits = $row[6];
+					$grade = $row[7];
+					$gradeStatus = $row[8];
+					$instructor = $row[9];
+					$dimension = $row[10];
 
-				$insertSql = "INSERT INTO gradetable (學期, 課程代碼, 開課單位, 課程名稱, 選別, 學分, 等級成績, 成績狀態, 任課老師, 向度) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+					$insertSql = "INSERT INTO gradetable (學期, 課程代碼, 開課單位, 課程名稱, 選別, 學分, 等級成績, 成績狀態, 任課老師, 向度) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-				$stmt = $conn->prepare($insertSql);
-				$stmt->bind_param("ssssssssss", $semester, $courseId, $department, $courseName, $courseType, $credits, $grade, $gradeStatus, $instructor, $dimension);
+					$stmt = $conn->prepare($insertSql);
+					$stmt->bind_param("ssssssssss", $semester, $courseId, $department, $courseName, $courseType, $credits, $grade, $gradeStatus, $instructor, $dimension);
 
-				if ($stmt->execute()) {
-					echo "Record inserted successfully!";
+					if ($stmt->execute()) {
+						echo " ";
+					} else {
+						echo "Error inserting record: " . $stmt->error;
+					}
 				} else {
-					echo "Error inserting record: " . $stmt->error;
+					echo "Error: Invalid row format";
 				}
 			}
 
@@ -130,6 +128,7 @@ include "db_connect.php"
 
 			echo "資料已插入到 SQL 資料庫中！\n";
 		?>
+
 
 </body>
 </html>
