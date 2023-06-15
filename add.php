@@ -20,12 +20,12 @@ include "db_connect.php"
         <label>Course name</label>
         <br>
         <form action=add.php method="get" id="add">
-        <input type="text" name="cos_cname" placeholder="Course name">
+        <input type="text" name="cos_cname" placeholder="Course name" required="required">
         <br>
         <label>Course credit</label>
         <br>
         <!--restrict input value to handle exception-->
-        <select name="cos_credit" required>
+        <select name="cos_credit" required="required">
             <option>Course credit</option>
             <option>0</option>
             <option>1</option>
@@ -40,7 +40,7 @@ include "db_connect.php"
         <label>Course type</label>
         <br>
         <!--restrict input value to handle exception-->
-        <select name="cos_type" required>
+        <select name="cos_type" required="required">
             <option>Course type</option>
             <option>必修</option>
             <option>選修</option>
@@ -106,13 +106,13 @@ $rowid = mysqli_fetch_array($result)[0]+1;
 switch($cos_type) {
 case "通識":
     if(!$liberal1101 && !$liberal1102) {
-        echo "<script>alert('輸入的通識抵免向度可能不存在!請再輸入一次');</script>";
+        echo "<script>alert('輸入的通識抵免向度可能不存在！請再輸入一次');</script>";
         $bug = true;
     } 
     break;
 case "體育":
     if($cos_credit!=0) {
-        echo "<script>alert('體育課程只能是0學分!請再輸入一次');</script>";
+        echo "<script>alert('體育課程只能是0學分！請再輸入一次');</script>";
         $bug = true;
     } /*elseif(!$PE1 && !$PE2) {
         echo "<script>alert('體育課程名稱可能有誤!請再輸入一次');</script>";
@@ -121,7 +121,7 @@ case "體育":
     break;
 case "外語":
     if($cos_credit==0) {
-        echo "<script>alert('外語課程不能是0學分!請再輸入一次');</script>";
+        echo "<script>alert('外語課程不能是0學分！請再輸入一次');</script>";
         $bug = true;
     } 
     break;
@@ -133,15 +133,15 @@ case "必修":
     $nums=mysqli_num_rows($result);
     debug($conn, $sql);
     if($nums==0) { 
-        echo "<script>alert('輸入之必修課程名稱可能有誤!請再輸入一次');</script>";
+        echo "<script>alert('輸入之必修課程名稱可能有誤！請再輸入一次');</script>";
         $bug = true;
     } else { //check credit
         $sql = "SELECT `cos_credit` FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' AND `cos_type` = '必修'";
+        debug($conn, $sql);
         $result = mysqli_query($conn, $sql);
         $credit = mysqli_fetch_array($result)[0];
-        print_r(mysqli_fetch_array($result)[0]);
         if($credit != $cos_credit){
-            echo "<script>alert('必修課程$cos_cname 應為 $credit 學分!請再輸入一次');</script>";
+            echo "<script>alert('必修課程$cos_cname 應為 $credit 學分！請再輸入一次');</script>";
             $bug = true;
         } 
     }
@@ -165,7 +165,7 @@ if(!$bug){
             } else {
                 echo "Error: " . $sql . "<br>" . mysqli_error($conn);
               }
-    } else {
+    } elseif($cos_cname != "") {
         $sql = "INSERT INTO `my_course` (`rowid`, `cos_cname`,`cos_credit`, `grade`, `grade_status`, `cos_type`) VALUES ('$rowid','$cos_cname','$cos_credit', '同意抵免', '已送註冊組', '$cos_type') ";
         if (mysqli_query($conn, $sql)) {
              echo "insert successfully";
