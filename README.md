@@ -1,4 +1,4 @@
-# DBMS23_final_project
+# DBMS23-final-project
 資料庫系統概論 第七組 <br>
 組員：電機12 賴柏叡、電機14 陳冠瑄、資財14 葉均芸、運管14 陳羿茹 <br>
 主題：電機系畢業預審
