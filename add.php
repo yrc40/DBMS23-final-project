@@ -117,6 +117,7 @@ case "體育":
     } 
     break;
 case "外語":
+    $cos_name = SaveChinese($cos_cname);
     $sql = "SELECT * FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' AND `brief` LIKE '%語言與溝通%'";
     debug($conn, $sql);
     $result = $conn->query($sql);
