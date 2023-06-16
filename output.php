@@ -44,8 +44,9 @@ include "db_connect.php"
         $tableSql = " TRUNCATE TABLE `checktable` ";
         $conn -> query ( $tableSql );
 
-        $sql = " INSERT INTO `checktable`
-                SELECT * FROM `my_course` WHERE `grade_status`<> 'W' AND `grade`<> 'D' AND `grade`<> 'E' AND `grade`<> '' ";
+        $sql = " INSERT INTO `checktable` (`rowid`, `semester`, `cos_id`, `dep_cname`, `cos_cname`, `cos_type`, `cos_credit`, `grade`, `grade_status`, `teacher`, `brief`)
+                SELECT `rowid`, `semester`, `cos_id`, `dep_cname`, `cos_cname`, `cos_type`, `cos_credit`, `grade`, `grade_status`, `teacher`, `brief` 
+                FROM `my_course` WHERE `grade_status`<> 'W' AND `grade`<> 'D' AND `grade`<> 'E' AND `grade`<> '' ";
         if ( $conn -> query ( $sql ) == TRUE ) {
                 echo " <script>alert('插入成功')</script> ";
         } else {
@@ -95,7 +96,10 @@ include "db_connect.php"
                 <div  id ="sidebar_left"> <br>
                          <h2>尚未修習必修</h2 >
                          <?php
-                                $que = " SELECT * FROM `ece_course` WHERE `main_class` = '基礎必修課程' AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`) ";
+                                $que = "SELECT * FROM `ece_course` WHERE `main_class` = '基礎必修課程' 
+                                        AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (
+                                                SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`
+                                        ) ";
                                 $course = mysqli_query( $conn , $que );
                                 // while($meta = mysqli_fetch_field($course)){
                                 // echo"$meta->name ";
@@ -133,7 +137,9 @@ include "db_connect.php"
                          echo " $sum[0]學分<br> ";
 
                          echo "專業選修至少33學分，您已修";
-                         $que = " SELECT IFNULL(SUM(`cos_credit`),0) FROM `checktable` WHERE `cos_type`= '選修' AND `cos_cname` IN (SELECT `cos_cname` FROM `ece_course` WHERE `main_class` = '專業選修課程') ";
+                         $que = " SELECT IFNULL(SUM(`cos_credit`),0) FROM `checktable` WHERE `cos_type`= '選修' AND `cos_cname` IN ( 
+                                        SELECT `cos_cname` FROM `ece_course` WHERE `main_class` = '專業選修課程'
+                                ) ";
                          $ans = mysqli_query( $conn , $que );
                          $sum = mysqli_fetch_row( $ans );
                          echo " $sum[0]學分<br> ";
@@ -151,7 +157,8 @@ include "db_connect.php"
                          echo " $sum[0]學分<br> ";
 
                          echo "校核心課程至少18學分，您已修";
-                         $que = " SELECT IFNULL(SUM(`cos_credit`),0) FROM `checktable` WHERE `brief` LIKE '領域課程%' OR `brief` LIKE '基本素養%' ";
+                         $que = " SELECT IFNULL(SUM(`cos_credit`),0) FROM `checktable` 
+                                WHERE `brief` LIKE '領域課程%' OR `brief` LIKE '基本素養%' ";
                          $ans = mysqli_query( $conn , $que );
                          $sum = mysqli_fetch_row( $ans );
                          echo " $sum[0]學分<br> ";
@@ -168,13 +175,19 @@ include "db_connect.php"
                          <h2>建議選課</h2>   
                          <?php
                                 echo " <h3>推薦選修:</h3> ";
-                                $que = " SELECT * FROM `ece_course` WHERE (`main_class` = '專業選修課程' OR `main_class` = '專業必修實驗課程') AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`) GROUP BY `cos_cname` ORDER BY RAND() LIMIT 10 ";
+                                $que = " SELECT * FROM `ece_course` WHERE (`main_class` = '專業選修課程' OR `main_class` = '專業必修實驗課程') 
+                                        AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (
+                                                SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`
+                                        ) GROUP BY `cos_cname` ORDER BY RAND() LIMIT 10 ";
                                 $course = mysqli_query( $conn , $que );
                                 while ( $row = mysqli_fetch_row( $course )){
                                         echo " $row[0] <br> ";
                                 }
                                 echo " <h3>推薦核心課程:</h3> ";
-                                $que = " SELECT * FROM 1112course WHERE (`brief` LIKE '領域課程%' OR `brief` LIKE '基本素養%') AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`) GROUP BY `cos_cname` ORDER BY RAND() LIMIT 10 ";
+                                $que = " SELECT * FROM 1112course WHERE (`brief` LIKE '%領域課程%' OR `brief` LIKE '%基本素養%') 
+                                        AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') NOT IN (
+                                                SELECT REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') FROM `checktable`
+                                        ) GROUP BY `cos_cname` ORDER BY RAND() LIMIT 10 ";
                                 $course = mysqli_query( $conn , $que );
                                 while ( $row = mysqli_fetch_row( $course )){
                                         echo " $row[1] <br> ";
