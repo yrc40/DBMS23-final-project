@@ -114,20 +114,29 @@ case "體育":
     if($cos_credit!=0) {
         echo "<script>alert('體育課程只能是0學分！請再輸入一次');</script>";
         $bug = true;
-    } /*elseif(!$PE1 && !$PE2) {
-        echo "<script>alert('體育課程名稱可能有誤!請再輸入一次');</script>";
-        $bug = true;
-    }*/
-    break;
-case "外語":
-    if($cos_credit==0) {
-        echo "<script>alert('外語課程不能是0學分！請再輸入一次');</script>";
-        $bug = true;
     } 
     break;
+case "外語":
+    $sql = "SELECT * FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' AND `brief` LIKE '%語言與溝通%'";
+    debug($conn, $sql);
+    $result = $conn->query($sql);
+    $nums=mysqli_num_rows($result);
+    if($nums==0) { 
+        echo "<script>alert('輸入之外語課程名稱可能有誤！請再輸入一次');</script>";
+        $bug = true;
+    } else {
+        $sql =$sql = "SELECT `cos_credit` FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' AND `brief` LIKE '%語言與溝通%'";
+        debug($conn, $sql);
+        $result = mysqli_query($conn, $sql);
+        $credit = mysqli_fetch_array($result)[0];
+        if($credit != $cos_credit){
+            echo "<script>alert('外語課程$cos_cname 應為 $credit 學分！請再輸入一次');</script>";
+            $bug = true;
+            
+        }
+    }
 case "必修":
     $cos_name = SaveChinese($cos_cname);
-    //echo $cos_name;
     $sql = "SELECT * FROM `ece_course` WHERE (`main_class` = '基礎必修課程' OR `main_class` = '專業必修實驗課程') AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' ";
     $result = $conn->query($sql);
     $nums=mysqli_num_rows($result);
@@ -144,6 +153,31 @@ case "必修":
             echo "<script>alert('必修課程$cos_cname 應為 $credit 學分！請再輸入一次');</script>";
             $bug = true;
         } 
+    }
+    break;
+case "選修":
+    $cos_name = SaveChinese($cos_cname);
+    $sql = "SELECT * FROM `ece_course` WHERE `main_class` = '專業選修課程' AND REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name' ";
+    $result = $conn->query($sql);
+    $nums=mysqli_num_rows($result);
+    debug($conn, $sql);
+    if($nums==0) { //並非電機系選修
+        $sql = "SELECT * FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name'"; // 檢查是否為其他系所課程
+        $result = $conn->query($sql);
+        $num=mysqli_num_rows($result);
+       if($num==0) { //無此課程
+        echo "<script>alert('輸入之選修課程名稱可能有誤！請再輸入一次');</script>"; 
+        $bug=true;
+       } else { //有此課程，檢查學分
+        $sql =$sql = "SELECT `cos_credit` FROM (SELECT * FROM `1111course` UNION SELECT * FROM `1112course`) AS `111` WHERE REGEXP_REPLACE(`cos_cname`, '[^[:alnum:]]', '') = '$cos_name'";
+        debug($conn, $sql);
+        $result = mysqli_query($conn, $sql);
+        $credit = mysqli_fetch_array($result)[0];
+        if($credit != $cos_credit){
+            echo "<script>alert('選修課程$cos_cname 應為 $credit 學分！請再輸入一次');</script>";
+            $bug = true;
+        }
+        }
     }
     break;
 }
